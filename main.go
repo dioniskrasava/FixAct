@@ -121,9 +121,7 @@ func createInterfaceApp(db *sql.DB) (content *fyne.Container) {
 	activityType.PlaceHolder = "Выбери активность"
 
 	startTime := widget.NewEntry()
-	h, m, s := time.Now().Clock()
-	timeStr := fmt.Sprintf("%d:%d:%d", h, m, s)
-	startTime.SetText(timeStr)
+	startTime.SetText(getNow())
 
 	endTime := widget.NewEntry()
 	totalTime := widget.NewEntry()
@@ -139,7 +137,9 @@ func createInterfaceApp(db *sql.DB) (content *fyne.Container) {
 		addButton:    addButton,
 	}
 
-	btnSupp1 := widget.NewButton("!", func() {})
+	btnSupp1 := widget.NewButton("*", func() { startTime.SetText(getNow()) })
+	btnSupp2 := widget.NewButton("*", func() { endTime.SetText(getNow()) })
+	btnSupp3 := widget.NewButton("*", func() { totalTime.SetText(getActTime(endTime.Text, startTime.Text)) })
 
 	globContainer := container.NewWithoutLayout()
 
@@ -152,10 +152,56 @@ func createInterfaceApp(db *sql.DB) (content *fyne.Container) {
 
 	pos.AddRow(globContainer, WIDTH, h1, widget.NewLabel("Тип активности:"), activityType)
 	pos.AddRow(globContainer, WIDTH, h2, widget.NewLabel("Время начала:"), startTime, btnSupp1)
-	pos.AddRow(globContainer, WIDTH, h3, widget.NewLabel("Время окончания:"), endTime)
-	pos.AddRow(globContainer, WIDTH, h4, widget.NewLabel("Общее время:"), totalTime)
+	pos.AddRow(globContainer, WIDTH, h3, widget.NewLabel("Время окончания:"), endTime, btnSupp2)
+	pos.AddRow(globContainer, WIDTH, h4, widget.NewLabel("Общее время:"), totalTime, btnSupp3)
 	pos.AddRow(globContainer, WIDTH, h5, widget.NewLabel("Комментарий:"), comment)
 	pos.AddRow(globContainer, WIDTH, h6, widget.NewLabel(""), addButton)
 
 	return globContainer
+}
+
+// ф-ии работы со временем определить в другой файл!
+func getNow() string {
+	h, m, s := time.Now().Clock()
+	timeStr := fmt.Sprintf("%02d:%02d:%02d", h, m, s) // Добавляем ведущие нули
+	return timeStr
+}
+
+// ф-ии работы со временем определить в другой файл!
+func getActTime(time1 string, time2 string) string {
+	// Парсинг строк в объекты time.Time
+	layout := "15:04:05"
+	t1, err := time.Parse(layout, time1)
+	if err != nil {
+		fmt.Println("Ошибка парсинга времени:", err)
+	}
+
+	t2, err := time.Parse(layout, time2)
+	if err != nil {
+		fmt.Println("Ошибка парсинга времени:", err)
+	}
+
+	// Вычисление разницы между временами
+	diff := t1.Sub(t2)
+
+	// Вывод результата
+	fmt.Printf("Разница между %s и %s составляет %v\n", time1, time2, diff)
+
+	return formatDuration(diff)
+}
+
+// ф-ии работы со временем определить в другой файл!
+
+// Функция для преобразования time.Duration в формат 00:00:00
+func formatDuration(d time.Duration) string {
+	// Получаем общее количество секунд
+	totalSeconds := int(d.Seconds())
+
+	// Вычисляем часы, минуты и секунды
+	hours := totalSeconds / 3600
+	minutes := (totalSeconds % 3600) / 60
+	seconds := totalSeconds % 60
+
+	// Форматируем с ведущими нулями
+	return fmt.Sprintf("%02d:%02d:%02d", hours, minutes, seconds)
 }
