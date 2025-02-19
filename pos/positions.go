@@ -8,11 +8,11 @@ import (
 
 // название классное
 // принимает глобальный кастомный контейнер container.NewWithoutLayout(), ширину окна, высоту позиции строки виджетов (пока еще недоработан этот момент)
-// и пачку канвас объектов которые нужно расстрочить
-func AwesomeShit(globContainer *fyne.Container, widthWindow float32, heightWidg float32, objects ...fyne.CanvasObject) {
+// и пачку (ВРОДЕ 3 ОБЪЕКТА. ИНАЧЕ ОШИБКА) канвас объектов которые нужно расстрочить
+func AddRow(globContainer *fyne.Container, widthWindow float32, heightWidg float32, objects ...fyne.CanvasObject) {
 
 	// ratios - процентные соотношения, на которые делится окно
-	ratios := []float32{0, 50, 80}
+	ratios := []float32{0, 40, 90}
 
 	// высчитываем 1 процент
 	percent := widthWindow / 100

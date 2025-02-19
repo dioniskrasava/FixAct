@@ -14,10 +14,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// oldApp const
 const (
-	WIDTH  float32 = 300
-	HEIGHT float32 = 250
+	WIDTH  float32 = 400
+	HEIGHT float32 = 300
 )
 
 // newApp
@@ -42,13 +41,14 @@ type Widgets struct {
 var widgtsApp Widgets = Widgets{}
 
 func main() {
-	//oldApp()
 	newApp()
 }
 
 func newApp() {
-	myApp := app.New()
-	myWindow := myApp.NewWindow("FixAct")
+	a := app.New()
+	w := a.NewWindow("FixAct")
+	w.Resize(fyne.NewSize(WIDTH, HEIGHT))
+	w.SetFixedSize(true)
 
 	db := createDB()
 	defer db.Close()
@@ -57,9 +57,8 @@ func newApp() {
 	content := createInterfaceApp(db)
 
 	// Установка контента в окно
-	myWindow.SetContent(content)
-	myWindow.Resize(fyne.NewSize(400, 300))
-	myWindow.ShowAndRun()
+	w.SetContent(content)
+	w.ShowAndRun()
 }
 
 func addAct(w Widgets, db *sql.DB) {
@@ -142,66 +141,21 @@ func createInterfaceApp(db *sql.DB) (content *fyne.Container) {
 
 	btnSupp1 := widget.NewButton("!", func() {})
 
-	row1 := container.NewGridWithColumns(2, widget.NewLabel("Тип активности:"), activityType)
-	row2 := container.NewGridWithColumns(2, widget.NewLabel("Время начала:"), startTime)
-	row3 := container.NewGridWithColumns(2, widget.NewLabel("Время окончания:"), endTime)
-	row4 := container.NewGridWithColumns(2, widget.NewLabel("Общее время:"), totalTime)
-	row5 := container.NewGridWithColumns(2, widget.NewLabel("Комментарий:"), comment)
-
-	// Создание контейнера с элементами интерфейса
-	cont1 := container.NewGridWithRows(4,
-		row1,
-		row2,
-		row3,
-		row4,
-	)
-
-	contSuppBut := container.NewGridWithRows(6, widget.NewLabel(""), btnSupp1)
-
-	contentLeft := container.NewVBox(cont1, row5, addButton)
-	content = container.NewHBox(contentLeft, contSuppBut)
-
-	return content
-}
-
-// -------------------------------------------
-// ---- OLD APP --------
-// ------------------------
-// -----------------------
-func oldApp() {
-	a := app.New()
-	w := a.NewWindow("Fix activity application")
-	w.Resize(fyne.NewSize(WIDTH, HEIGHT))
-	w.SetFixedSize(true)
-
-	w.SetContent(oldWidgetsForTest())
-	w.ShowAndRun()
-}
-func oldWidgetsForTest() *fyne.Container {
-	lbl := widget.NewLabel("Begin time :")
-	lbl.TextStyle = fyne.TextStyle{Bold: true}
-
-	ent := widget.NewEntry()
-	ent.Resize(fyne.NewSize(ent.MinSize().Width, ent.MinSize().Height))
-
-	btn := widget.NewButton("Click", func() {})
-	btn.Resize(fyne.NewSize(btn.MinSize().Width, btn.MinSize().Height))
-
-	//----------------------------------------
-	lbl2 := widget.NewLabel("end :")
-	lbl2.TextStyle = fyne.TextStyle{Bold: true}
-
-	ent2 := widget.NewEntry()
-
-	btn2 := widget.NewButton("!", func() {})
-
-	// высоты строк
-	h1 := float32(10)
-	h2 := float32(50)
-
 	globContainer := container.NewWithoutLayout()
 
-	pos.AwesomeShit(globContainer, WIDTH, h1, lbl, ent, btn)
-	pos.AwesomeShit(globContainer, WIDTH, h2, lbl2, ent2, btn2)
+	h1 := float32(10)
+	h2 := float32(50)
+	h3 := float32(90)
+	h4 := float32(130)
+	h5 := float32(170)
+	h6 := float32(250)
+
+	pos.AddRow(globContainer, WIDTH, h1, widget.NewLabel("Тип активности:"), activityType)
+	pos.AddRow(globContainer, WIDTH, h2, widget.NewLabel("Время начала:"), startTime, btnSupp1)
+	pos.AddRow(globContainer, WIDTH, h3, widget.NewLabel("Время окончания:"), endTime)
+	pos.AddRow(globContainer, WIDTH, h4, widget.NewLabel("Общее время:"), totalTime)
+	pos.AddRow(globContainer, WIDTH, h5, widget.NewLabel("Комментарий:"), comment)
+	pos.AddRow(globContainer, WIDTH, h6, widget.NewLabel(""), addButton)
+
 	return globContainer
 }
