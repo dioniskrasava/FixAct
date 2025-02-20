@@ -14,6 +14,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+// ВЕРСИЯ  V 1.01 - ДОБАВИТЬ ФИЧУ (ВЫБОР МЕСТА СОХРАНИЕНИЯ БАЗЫ ДАННЫХ)
+
 const (
 	WIDTH  float32 = 400
 	HEIGHT float32 = 300
