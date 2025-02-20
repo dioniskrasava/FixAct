@@ -8,6 +8,47 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+func createTableInDB(db *sql.DB) {
+
+	// Создание таблицы, если она не существует
+	createTableSQL := `CREATE TABLE IF NOT EXISTS activities (
+	id INTEGER PRIMARY KEY AUTOINCREMENT,
+	type TEXT,
+	start_time TEXT,
+	end_time TEXT,
+	total_time TEXT,
+	comment TEXT
+);`
+	_, err := db.Exec(createTableSQL)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func createDB() (db *sql.DB) {
+	// Подключение к базе данных SQLite
+	// если пути к базе данных нет, то создаём базу данных в той же директории
+
+	var err error
+
+	if pathFileDB == "" {
+		db, err = sql.Open("sqlite3", "./activities.db")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// если пользователь выбрал путь базы данных, то создаем по этому пути
+	} else if pathFileDB != "" {
+		db, err = sql.Open("sqlite3", pathFileDB)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	return db
+
+}
+
 func addAct(w Widgets, db *sql.DB) {
 	activity := Activity{
 		Type:      w.activityType.Selected,
@@ -32,32 +73,4 @@ func addAct(w Widgets, db *sql.DB) {
 	w.comment.SetText("")
 
 	fmt.Println("Активность добавлена!")
-}
-
-func createTableInDB(db *sql.DB) {
-
-	// Создание таблицы, если она не существует
-	createTableSQL := `CREATE TABLE IF NOT EXISTS activities (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
-	type TEXT,
-	start_time TEXT,
-	end_time TEXT,
-	total_time TEXT,
-	comment TEXT
-);`
-	_, err := db.Exec(createTableSQL)
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
-func createDB() (db *sql.DB) {
-	// Подключение к базе данных SQLite
-	db, err := sql.Open("sqlite3", "./activities.db")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return db
-
 }

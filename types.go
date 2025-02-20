@@ -1,10 +1,14 @@
 package main
 
-import "fyne.io/fyne/v2/widget"
+import (
+	"database/sql"
+
+	"fyne.io/fyne/v2/widget"
+)
 
 const (
-	WIDTH  float32 = 400
-	HEIGHT float32 = 300
+	WIDTH  float32 = 425
+	HEIGHT float32 = 350
 )
 
 // newApp
@@ -27,3 +31,7 @@ type Widgets struct {
 }
 
 var widgtsApp Widgets = Widgets{}
+
+var pathFileDB string // файл открываемой базы данных
+
+var db *sql.DB

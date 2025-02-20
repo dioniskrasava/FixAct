@@ -1,8 +1,6 @@
 package pos
 
 import (
-	"fmt"
-
 	"fyne.io/fyne/v2"
 )
 
@@ -12,7 +10,7 @@ import (
 func AddRow(globContainer *fyne.Container, widthWindow float32, heightWidg float32, objects ...fyne.CanvasObject) {
 
 	// ratios - процентные соотношения, на которые делится окно
-	ratios := []float32{0, 40, 90}
+	ratios := []float32{0, 37, 91}
 
 	// высчитываем 1 процент
 	percent := widthWindow / 100
@@ -36,7 +34,7 @@ func getVertLinePos(ratios []float32, percent float32) []float32 {
 		positionsX = append(positionsX, posX)
 	}
 
-	fmt.Println("Позиции вертикальных линий : ", positionsX)
+	//fmt.Println("Позиции вертикальных линий : ", positionsX)
 	return positionsX
 }
 
@@ -55,7 +53,7 @@ func getColumnWidths(positionsX []float32, w float32) []float32 {
 			widthsX = append(widthsX, width)
 		}
 	}
-	fmt.Println("Ширины колонок : ", widthsX)
+	//fmt.Println("Ширины колонок : ", widthsX)
 	return widthsX
 }
 

@@ -13,12 +13,13 @@ func main() {
 }
 
 func newApp() {
-	a := app.New()
+	// Создаем новое приложение с уникальным идентификатором
+	a := app.NewWithID("com.fixact.app1")
 	w := a.NewWindow("FixAct")
 	w.Resize(fyne.NewSize(WIDTH, HEIGHT))
 	w.SetFixedSize(true)
 
-	db := createDB()
+	db = createDB()
 	defer db.Close()
 
 	createTableInDB(db)
@@ -26,5 +27,6 @@ func newApp() {
 
 	// Установка контента в окно
 	w.SetContent(content)
+	w.SetMainMenu(createMenu(w))
 	w.ShowAndRun()
 }
