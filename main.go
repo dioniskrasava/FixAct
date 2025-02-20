@@ -21,6 +21,18 @@ func newApp() {
 
 	// Получаем объект Preferences
 	//prefs := a.Preferences()
+	/*
+			Preferences предоставляет методы для работы с различными типами данных:
+		1. Строки
+
+		    SetString(key string, value string): Сохраняет строку по ключу.
+		    String(key string) string: Возвращает строку по ключу. Если ключ отсутствует, возвращает пустую строку.
+		    StringWithFallback(key string, fallback string) string: Возвращает строку по ключу или значение fallback, если ключ отсутствует.
+
+			6. Удаление данных
+
+		    RemoveValue(key string): Удаляет значение по ключу.
+	*/
 
 	createDB()
 	defer db.Close()
