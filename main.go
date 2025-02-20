@@ -19,7 +19,10 @@ func newApp() {
 	w.Resize(fyne.NewSize(WIDTH, HEIGHT))
 	w.SetFixedSize(true)
 
-	db = createDB()
+	// Получаем объект Preferences
+	//prefs := a.Preferences()
+
+	createDB()
 	defer db.Close()
 
 	createTableInDB(db)

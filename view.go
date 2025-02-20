@@ -23,7 +23,7 @@ func createInterfaceApp(db *sql.DB) (content *fyne.Container) {
 	endTime := widget.NewEntry()
 	totalTime := widget.NewEntry()
 	comment := widget.NewMultiLineEntry()
-	addButton := widget.NewButton("Добавить активность", func() { addAct(widgtsApp, db) })
+	addButton := widget.NewButton("Добавить активность", func() { addAct(widgtsApp) })
 
 	widgtsApp = Widgets{
 		activityType: activityType,
@@ -57,11 +57,13 @@ func createInterfaceApp(db *sql.DB) (content *fyne.Container) {
 	return globContainer
 }
 
-func createMenu(w fyne.Window) *fyne.MainMenu { //------------------------------------------------------------------
+func createMenu(w fyne.Window) *fyne.MainMenu {
 	file_item1 := fyne.NewMenuItem("Сохранить", func() {})
 	file_item2 := fyne.NewMenuItem("Открыть", func() {
 		openFileWindow(w)
-		db = createDB() // ВОЗМОЖНО ТУТ СТОИТ ОБДУМАТЬ !!!! ПОТОМУ ЧТО КАЖЕТСЯ БД НЕ ОБНОВЛЯЕТСЯ ИЛИ ПРОСТО ПРОГРАММА ЖДЕТ ПОКА ПОЛЬЗОВАТЕЛЬ ВЫБЕРЕТ ПУТЬ А ЭТОТ КОД УЖЕ ОТРАБОТАЛ
+		// ВОЗМОЖНО ТУТ СТОИТ ОБДУМАТЬ !!!!
+		// ПОТОМУ ЧТО КАЖЕТСЯ БД НЕ ОБНОВЛЯЕТСЯ ИЛИ ПРОСТО
+		// ПРОГРАММА ЖДЕТ ПОКА ПОЛЬЗОВАТЕЛЬ ВЫБЕРЕТ ПУТЬ А ЭТОТ КОД УЖЕ ОТРАБОТАЛ
 	})
 
 	file_menu := fyne.NewMenu("Файл", file_item1, file_item2)
@@ -72,8 +74,14 @@ func createMenu(w fyne.Window) *fyne.MainMenu { //------------------------------
 }
 
 func openFileWindow(w fyne.Window) {
+	// Увеличиваем размер окна
+	w.Resize(fyne.NewSize(550, 400)) // Установите желаемый размер окна
+
 	// Показываем диалог открытия файла
 	dialog.ShowFileOpen(func(reader fyne.URIReadCloser, err error) {
+		// Восстанавливаем исходный размер окна после закрытия диалога
+		defer w.Resize(fyne.NewSize(WIDTH, HEIGHT))
+
 		if err != nil {
 			log.Println("Error opening file:", err)
 			return
@@ -84,9 +92,24 @@ func openFileWindow(w fyne.Window) {
 		}
 		defer reader.Close()
 
-		// Здесь можно обработать выбранный файл
+		// Обрабатываем выбранный файл
 		log.Println("Selected file:", reader.URI().Path())
-		pathFileDB = reader.URI().Path() // переписывае глобальную переменную
-	}, w)
+		pathFileDB = reader.URI().Path() // Обновляем глобальную переменную
 
+		// ОТКЛЮЧАЕМСЯ ОТ СТАРОЙ БАЗЫ ДАННЫХ
+		if db != nil {
+			log.Println("Отключили старую")
+			db.Close()
+		}
+
+		// Обновляем подключение к базе данных
+		createDB()
+		if db == nil {
+			log.Println("Failed to create or connect to the database")
+			return
+		}
+
+		// Теперь можно использовать новую базу данных
+		log.Println("Database connection updated successfully")
+	}, w)
 }

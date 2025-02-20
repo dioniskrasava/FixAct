@@ -25,31 +25,32 @@ func createTableInDB(db *sql.DB) {
 	}
 }
 
-func createDB() (db *sql.DB) {
-	// Подключение к базе данных SQLite
-	// если пути к базе данных нет, то создаём базу данных в той же директории
-
+func createDB() {
 	var err error
 
 	if pathFileDB == "" {
+		// Если путь к базе данных не указан, используем путь по умолчанию
 		db, err = sql.Open("sqlite3", "./activities.db")
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		// если пользователь выбрал путь базы данных, то создаем по этому пути
-	} else if pathFileDB != "" {
+	} else {
+		// Если путь к базе данных указан, используем его
 		db, err = sql.Open("sqlite3", pathFileDB)
 		if err != nil {
 			log.Fatal(err)
 		}
 	}
 
-	return db
+	// Проверяем подключение к базе данных
+	err = db.Ping()
+	if err != nil {
+		log.Fatal("Failed to ping database:", err)
+	}
 
 }
 
-func addAct(w Widgets, db *sql.DB) {
+func addAct(w Widgets) {
 	activity := Activity{
 		Type:      w.activityType.Selected,
 		StartTime: w.startTime.Text,
