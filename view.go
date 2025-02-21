@@ -2,8 +2,9 @@ package main
 
 import (
 	"FixActApp/pos"
-	"database/sql"
 	"log"
+
+	"strings"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -12,7 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func createInterfaceApp(db *sql.DB) (content *fyne.Container) {
+func createInterfaceApp() (content *fyne.Container) {
 	// Элементы интерфейса
 	activityType := widget.NewSelect([]string{"Книга", "Код", "Видео"}, func(value string) {})
 	activityType.PlaceHolder = "Выбери активность"
@@ -92,24 +93,37 @@ func openFileWindow(w fyne.Window) {
 		}
 		defer reader.Close()
 
+		checkOpenFileDB(reader.URI().Path(), w)
+
 		// Обрабатываем выбранный файл
 		log.Println("Selected file:", reader.URI().Path())
-		pathFileDB = reader.URI().Path() // Обновляем глобальную переменную
+
+	}, w)
+}
+
+func checkOpenFileDB(pathFileFromUser string, w fyne.Window) {
+	// ЕСЛИ ВЫБРАННЫЙ ФАЙЛ КОНЧАЕТСЯ НА .ДБ
+	if strings.HasSuffix(pathFileFromUser, ".db") {
+		pathFileDB = pathFileFromUser // Обновляем глобальную переменную
 
 		// ОТКЛЮЧАЕМСЯ ОТ СТАРОЙ БАЗЫ ДАННЫХ
 		if db != nil {
-			log.Println("Отключили старую")
+			log.Println("the old database was disabled // отключили старую базу данных")
 			db.Close()
 		}
 
 		// Обновляем подключение к базе данных
 		createDB()
 		if db == nil {
-			log.Println("Failed to create or connect to the database")
+			log.Println("Failed to create or connect to the database // Не удалось создать базу данных или подключиться к ней")
 			return
 		}
 
 		// Теперь можно использовать новую базу данных
-		log.Println("Database connection updated successfully")
-	}, w)
+		log.Println("Database connection updated successfully // Подключение к базе данных успешно обновлено")
+		dialog.ShowInformation("Информация", "Всё заебок! Подключились к новой базе данных!", w)
+	} else {
+		//ТЫ ДУРАЧОК!
+		dialog.ShowInformation("Предупреждение", "Ты дурачок! Выбрал не тот тип файла!", w)
+	}
 }

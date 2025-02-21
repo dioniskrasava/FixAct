@@ -8,7 +8,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func createTableInDB(db *sql.DB) {
+func createTableInDB() {
 
 	// Создание таблицы, если она не существует
 	createTableSQL := `CREATE TABLE IF NOT EXISTS activities (

@@ -37,8 +37,8 @@ func newApp() {
 	createDB()
 	defer db.Close()
 
-	createTableInDB(db)
-	content := createInterfaceApp(db)
+	createTableInDB()
+	content := createInterfaceApp()
 
 	// Установка контента в окно
 	w.SetContent(content)
